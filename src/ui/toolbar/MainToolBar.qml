@@ -186,6 +186,20 @@ Item {
                     }
                 }
 
+                QGCToolBarButton {
+                    id:                 controlDebugButton
+                    Layout.fillHeight:  true
+                    icon.source:        "/qmlimages/ControlDebug.svg"
+                    onClicked: {
+                        if (mainWindow.preventViewSwitch()) {
+                            return
+                        }
+                        buttonRow.clearAllChecks()
+                        checked = true
+                        mainWindow.showControlDebugView()
+                    }
+                }
+
                 Item {
                     Layout.fillHeight:  true
                     width:              ScreenTools.defaultFontPixelWidth / 2

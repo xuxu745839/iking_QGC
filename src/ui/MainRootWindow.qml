@@ -100,11 +100,12 @@ ApplicationWindow {
     }
 
     function viewSwitch(isPlanView) {
-        settingsWindow.visible  = false
-        setupWindow.visible     = false
-        analyzeWindow.visible   = false
-        flightView.visible      = false
-        planViewLoader.visible  = false
+        settingsWindow.visible      = false
+        setupWindow.visible         = false
+        analyzeWindow.visible       = false
+        controlDebugWindow.visible  = false
+        flightView.visible          = false
+        planViewLoader.visible      = false
         if(isPlanView) {
             toolbar.source  = _planToolbar
         } else {
@@ -139,6 +140,11 @@ ApplicationWindow {
     function showSettingsView() {
         viewSwitch(false)
         settingsWindow.visible = true
+    }
+
+    function showControlDebugView() {
+        viewSwitch(false)
+        controlDebugWindow.visible = true
     }
 
     //-------------------------------------------------------------------------
@@ -386,6 +392,15 @@ ApplicationWindow {
         anchors.fill:   parent
         visible:        false
         source:         "AnalyzeView.qml"
+    }
+
+    //-------------------------------------------------------------------------
+    /// Control Debug
+    Loader {
+        id:             controlDebugWindow
+        anchors.fill:   parent
+        visible:        false
+        source:         "ControlDebugView.qml"
     }
 
     //-------------------------------------------------------------------------

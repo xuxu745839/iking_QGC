@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"showSetupView\\\\|showPlanView\\\\|showFlyView\\\\|showAnalyzeView\")",
+      "Bash(xargs grep -l \"showSetupView\\\\|showPlanView\\\\|showFlyView\")",
+      "Bash(xargs grep -l \"Analyze.svg\")"
+    ]
+  }
+}
