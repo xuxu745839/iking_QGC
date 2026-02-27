@@ -150,8 +150,9 @@ Rectangle {
             Layout.fillHeight: true
             title:             qsTr("滚转角")
             unit:              "°"
-            yMin:              -30
-            yMax:              30
+            yAmplitude:        30
+            yAmplMax:          180
+            yAmplMin:          1
             timeWindowSec:     controlDebugView._timeWindowSec
         }
 
@@ -161,8 +162,9 @@ Rectangle {
             Layout.fillHeight: true
             title:             qsTr("俯仰角")
             unit:              "°"
-            yMin:              -30
-            yMax:              30
+            yAmplitude:        30
+            yAmplMax:          180
+            yAmplMin:          1
             timeWindowSec:     controlDebugView._timeWindowSec
         }
 
@@ -172,8 +174,9 @@ Rectangle {
             Layout.fillHeight: true
             title:             qsTr("航向角")
             unit:              "°"
-            yMin:              -180
-            yMax:              180
+            yAmplitude:        180
+            yAmplMax:          180
+            yAmplMin:          1
             timeWindowSec:     controlDebugView._timeWindowSec
         }
 
@@ -184,8 +187,9 @@ Rectangle {
             Layout.fillHeight: true
             title:             qsTr("滚转角速度")
             unit:              "°/s"
-            yMin:              -50
-            yMax:              50
+            yAmplitude:        50
+            yAmplMax:          500
+            yAmplMin:          1
             timeWindowSec:     controlDebugView._timeWindowSec
         }
 
@@ -195,8 +199,9 @@ Rectangle {
             Layout.fillHeight: true
             title:             qsTr("俯仰角速度")
             unit:              "°/s"
-            yMin:              -50
-            yMax:              50
+            yAmplitude:        50
+            yAmplMax:          500
+            yAmplMin:          1
             timeWindowSec:     controlDebugView._timeWindowSec
         }
 
@@ -206,8 +211,9 @@ Rectangle {
             Layout.fillHeight: true
             title:             qsTr("航向角速度")
             unit:              "°/s"
-            yMin:              -50
-            yMax:              50
+            yAmplitude:        50
+            yAmplMax:          500
+            yAmplMin:          1
             timeWindowSec:     controlDebugView._timeWindowSec
         }
     }
