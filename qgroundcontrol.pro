@@ -1379,3 +1379,6 @@ contains (CONFIG, QGC_DISABLE_INSTALLER_SETUP) {
 } else {
     include(QGCInstaller.pri)
 }
+
+win32:msvc: QMAKE_CXXFLAGS += /utf-8
+win32:msvc: QMAKE_CFLAGS   += /utf-8
