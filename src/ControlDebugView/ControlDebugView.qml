@@ -10,12 +10,14 @@
 import QtQuick          2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts  1.11
+import QtGraphicalEffects 1.0
 
 import QGroundControl               1.0
 import QGroundControl.Palette       1.0
 import QGroundControl.Controls      1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Controllers   1.0
+import QGroundControl.FlightMap     1.0
 
 Rectangle {
     id:     controlDebugView
@@ -132,89 +134,176 @@ Rectangle {
         }
     }
 
-    // ── 6 张图表（3列×2行） ─────────────────────────────────────────
-    GridLayout {
+    // ── 6 张图表 + 右侧仪表面板 ────────────────────────────────────
+    RowLayout {
         anchors.top:        titleBar.bottom
         anchors.left:       parent.left
         anchors.right:      parent.right
         anchors.bottom:     parent.bottom
         anchors.margins:    4
-        columns:            3
-        rowSpacing:         4
-        columnSpacing:      4
+        spacing:            4
 
-        // 第一行：三个角度图
-        RealtimeChart {
-            id:                rollChart
+        // ── 左侧：6 张图表（3列×2行） ─────────────────────────────
+        GridLayout {
             Layout.fillWidth:  true
             Layout.fillHeight: true
-            title:             qsTr("滚转角")
-            unit:              "°"
-            yAmplitude:        30
-            yAmplMax:          180
-            yAmplMin:          1
-            timeWindowSec:     controlDebugView._timeWindowSec
-        }
+            columns:           3
+            rowSpacing:        4
+            columnSpacing:     4
 
-        RealtimeChart {
-            id:                pitchChart
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            title:             qsTr("俯仰角")
-            unit:              "°"
-            yAmplitude:        30
-            yAmplMax:          180
-            yAmplMin:          1
-            timeWindowSec:     controlDebugView._timeWindowSec
-        }
+            // 第一行：三个角度图
+            RealtimeChart {
+                id:                rollChart
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                title:             qsTr("滚转角")
+                unit:              "°"
+                yAmplitude:        30
+                yAmplMax:          180
+                yAmplMin:          1
+                timeWindowSec:     controlDebugView._timeWindowSec
+            }
 
-        RealtimeChart {
-            id:                yawChart
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            title:             qsTr("航向角")
-            unit:              "°"
-            yAmplitude:        180
-            yAmplMax:          180
-            yAmplMin:          1
-            timeWindowSec:     controlDebugView._timeWindowSec
-        }
+            RealtimeChart {
+                id:                pitchChart
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                title:             qsTr("俯仰角")
+                unit:              "°"
+                yAmplitude:        30
+                yAmplMax:          180
+                yAmplMin:          1
+                timeWindowSec:     controlDebugView._timeWindowSec
+            }
 
-        // 第二行：三个角速度图
-        RealtimeChart {
-            id:                rollRateChart
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            title:             qsTr("滚转角速度")
-            unit:              "°/s"
-            yAmplitude:        50
-            yAmplMax:          500
-            yAmplMin:          1
-            timeWindowSec:     controlDebugView._timeWindowSec
-        }
+            RealtimeChart {
+                id:                yawChart
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                title:             qsTr("航向角")
+                unit:              "°"
+                yAmplitude:        180
+                yAmplMax:          180
+                yAmplMin:          1
+                timeWindowSec:     controlDebugView._timeWindowSec
+            }
 
-        RealtimeChart {
-            id:                pitchRateChart
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            title:             qsTr("俯仰角速度")
-            unit:              "°/s"
-            yAmplitude:        50
-            yAmplMax:          500
-            yAmplMin:          1
-            timeWindowSec:     controlDebugView._timeWindowSec
-        }
+            // 第二行：三个角速度图
+            RealtimeChart {
+                id:                rollRateChart
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                title:             qsTr("滚转角速度")
+                unit:              "°/s"
+                yAmplitude:        50
+                yAmplMax:          500
+                yAmplMin:          1
+                timeWindowSec:     controlDebugView._timeWindowSec
+            }
 
-        RealtimeChart {
-            id:                yawRateChart
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            title:             qsTr("航向角速度")
-            unit:              "°/s"
-            yAmplitude:        50
-            yAmplMax:          500
-            yAmplMin:          1
-            timeWindowSec:     controlDebugView._timeWindowSec
-        }
-    }
-}
+            RealtimeChart {
+                id:                pitchRateChart
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                title:             qsTr("俯仰角速度")
+                unit:              "°/s"
+                yAmplitude:        50
+                yAmplMax:          500
+                yAmplMin:          1
+                timeWindowSec:     controlDebugView._timeWindowSec
+            }
+
+            RealtimeChart {
+                id:                yawRateChart
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                title:             qsTr("航向角速度")
+                unit:              "°/s"
+                yAmplitude:        50
+                yAmplMax:          500
+                yAmplMin:          1
+                timeWindowSec:     controlDebugView._timeWindowSec
+            }
+        } // GridLayout
+
+        // ── 右侧：姿态仪表面板 ────────────────────────────────────
+        Column {
+            Layout.preferredWidth: ScreenTools.defaultFontPixelWidth * 22
+            Layout.fillHeight:     true
+            spacing:               6
+
+            readonly property real _widgetSize: ScreenTools.defaultFontPixelWidth * 22 - 4
+
+            // 姿态球
+            QGCAttitudeWidget {
+                size:    parent._widgetSize
+                vehicle: activeVehicle
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            // 罗盘
+            QGCCompassWidget {
+                size:    parent._widgetSize
+                vehicle: activeVehicle
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            // 飞行数据值列表
+            Rectangle {
+                width:  parent._widgetSize
+                height: dataColumn.implicitHeight + 8
+                color:  "#1a1a3e"
+                radius: 4
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Column {
+                    id:              dataColumn
+                    anchors.margins: 4
+                    anchors.fill:    parent
+                    spacing:         2
+
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("地速 (m/s)");   color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.groundSpeed.rawValue.toFixed(1)     : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("空速 (m/s)");   color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.airSpeed.rawValue.toFixed(1)        : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("高度AMSL (m)"); color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.altitudeAMSL.rawValue.toFixed(1)    : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("高度Rel (m)");  color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.altitudeRelative.rawValue.toFixed(1): "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("升降率 (m/s)"); color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.climbRate.rawValue.toFixed(2)       : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("航向 (°)");     color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.heading.rawValue.toFixed(0)         : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("滚转 (°)");     color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.roll.rawValue.toFixed(1)            : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                    Row {
+                        width: parent.width; spacing: 2
+                        QGCLabel { width: parent.width*0.6; text: qsTr("俯仰 (°)");     color:"#99aabb"; font.pixelSize:10; elide:Text.ElideRight }
+                        QGCLabel { width: parent.width*0.4; text: activeVehicle ? activeVehicle.pitch.rawValue.toFixed(1)           : "--"; color:"#e0e8ff"; font.pixelSize:10; horizontalAlignment:Text.AlignRight }
+                    }
+                }
+            }
+        } // Column（右侧面板）
+    } // RowLayout
+} // Rectangle

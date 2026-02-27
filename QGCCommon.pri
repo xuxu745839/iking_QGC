@@ -171,6 +171,7 @@ exists ($$PWD/.git) {
     MAC_BUILD       = 0
 }
 
+GIT_VERSION = "V4.0.11.iking.1"
 DEFINES += GIT_VERSION=\"\\\"$$GIT_VERSION\\\"\"
 DEFINES += EIGEN_MPL2_ONLY
 
