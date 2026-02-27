@@ -73,6 +73,7 @@
 #include "VideoManager.h"
 #include "VideoReceiver.h"
 #include "LogDownloadController.h"
+#include "ControlDebugView/ControlDebugController.h"
 #if defined(QGC_ENABLE_MAVLINK_INSPECTOR)
 #include "MAVLinkInspectorController.h"
 #endif
@@ -544,6 +545,7 @@ void QGCApplication::_initCommon()
 #endif
     qmlRegisterType<GeoTagController>               (kQGCControllers,                       1, 0, "GeoTagController");
     qmlRegisterType<MavlinkConsoleController>       (kQGCControllers,                       1, 0, "MavlinkConsoleController");
+    qmlRegisterType<ControlDebugController>         (kQGCControllers,                       1, 0, "ControlDebugController");
 #if defined(QGC_ENABLE_MAVLINK_INSPECTOR)
     qmlRegisterType<MAVLinkInspectorController>     (kQGCControllers,                       1, 0, "MAVLinkInspectorController");
 #endif

@@ -15,44 +15,133 @@ import QGroundControl               1.0
 import QGroundControl.Palette       1.0
 import QGroundControl.Controls      1.0
 import QGroundControl.ScreenTools   1.0
+import QGroundControl.Controllers   1.0
 
 Rectangle {
     id:     controlDebugView
-    color:  qgcPal.window
+    color:  "#111122"
     z:      QGroundControl.zOrderTopMost
 
     QGCPalette { id: qgcPal; colorGroupEnabled: true }
 
-    readonly property real  _defaultTextHeight:     ScreenTools.defaultFontPixelHeight
-    readonly property real  _defaultTextWidth:       ScreenTools.defaultFontPixelWidth
-    readonly property real  _margins:               ScreenTools.defaultFontPixelWidth
+    // ── 控制器实例 ─────────────────────────────────────────────
+    ControlDebugController { id: debugCtrl }
 
-    ColumnLayout {
-        anchors.fill:       parent
-        anchors.margins:    _margins
-        spacing:            _defaultTextHeight
+    // ── 20 Hz 刷新定时器（与数据到达速率解耦，避免过度重绘） ──────
+    Timer {
+        interval: 50
+        running:  true
+        repeat:   true
+        onTriggered: {
+            rollChart.redraw()
+            pitchChart.redraw()
+            yawChart.redraw()
+            rollRateChart.redraw()
+            pitchRateChart.redraw()
+            yawRateChart.redraw()
+        }
+    }
+
+    // ── 接收新数据，追加到对应图表 ────────────────────────────────
+    Connections {
+        target: debugCtrl
+        onDataUpdated: {
+            rollChart.appendData     (t, cmdRoll,      feedRoll)
+            pitchChart.appendData    (t, cmdPitch,     feedPitch)
+            yawChart.appendData      (t, cmdYaw,       feedYaw)
+            rollRateChart.appendData (t, cmdRollRate,  feedRollRate)
+            pitchRateChart.appendData(t, cmdPitchRate, feedPitchRate)
+            yawRateChart.appendData  (t, cmdYawRate,   feedYawRate)
+        }
+    }
+
+    // ── 顶部标题栏 ────────────────────────────────────────────────
+    Rectangle {
+        id:     titleBar
+        width:  parent.width
+        height: ScreenTools.defaultFontPixelHeight * 2
+        color:  "#1a1a3e"
 
         QGCLabel {
-            Layout.fillWidth:   true
-            text:               qsTr("控制参数整定")
-            font.pointSize:     ScreenTools.largeFontPointSize
-            font.family:        ScreenTools.demiboldFontFamily
-            horizontalAlignment: Text.AlignHCenter
+            anchors.centerIn: parent
+            text:             qsTr("控制参数整定")
+            font.pointSize:   ScreenTools.mediumFontPointSize
+            font.family:      ScreenTools.demiboldFontFamily
+            color:            "#e0e8ff"
+        }
+    }
+
+    // ── 6 张图表（3列×2行） ────────────────────────────────────────
+    GridLayout {
+        anchors.top:        titleBar.bottom
+        anchors.left:       parent.left
+        anchors.right:      parent.right
+        anchors.bottom:     parent.bottom
+        anchors.margins:    4
+        columns:            3
+        rowSpacing:         4
+        columnSpacing:      4
+
+        // 第一行：三个角度图
+        RealtimeChart {
+            id:             rollChart
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            title:          qsTr("滚转角")
+            unit:           "°"
+            yMin:           -180
+            yMax:           180
         }
 
-        Rectangle {
-            Layout.fillWidth:   true
-            height:             1
-            color:              qgcPal.text
-            opacity:            0.5
+        RealtimeChart {
+            id:             pitchChart
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            title:          qsTr("俯仰角")
+            unit:           "°"
+            yMin:           -90
+            yMax:           90
         }
 
-        QGCLabel {
-            Layout.fillWidth:   true
-            text:               qsTr("此视图用于控制参数整定功能。")
-            wrapMode:           Text.WordWrap
+        RealtimeChart {
+            id:             yawChart
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            title:          qsTr("航向角")
+            unit:           "°"
+            yMin:           -180
+            yMax:           180
         }
 
-        Item { Layout.fillHeight: true }
+        // 第二行：三个角速度图
+        RealtimeChart {
+            id:             rollRateChart
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            title:          qsTr("滚转角速度")
+            unit:           "°/s"
+            yMin:           -200
+            yMax:           200
+        }
+
+        RealtimeChart {
+            id:             pitchRateChart
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            title:          qsTr("俯仰角速度")
+            unit:           "°/s"
+            yMin:           -200
+            yMax:           200
+        }
+
+        RealtimeChart {
+            id:             yawRateChart
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            title:          qsTr("航向角速度")
+            unit:           "°/s"
+            yMin:           -200
+            yMax:           200
+        }
     }
 }

@@ -3,7 +3,8 @@
     "allow": [
       "Bash(xargs grep -l \"showSetupView\\\\|showPlanView\\\\|showFlyView\\\\|showAnalyzeView\")",
       "Bash(xargs grep -l \"showSetupView\\\\|showPlanView\\\\|showFlyView\")",
-      "Bash(xargs grep -l \"Analyze.svg\")"
+      "Bash(xargs grep -l \"Analyze.svg\")",
+      "Bash(grep -n \"src/AnalyzeView \\\\\\\\|src/AnalyzeView$\\\\|GeoTagController\\\\|LogDownloadController.h\\\\|LogDownloadController.cc\" e:/qgc_dev/V4011dev/qgroundcontrol/qgroundcontrol.pro)"
     ]
   }
 }

@@ -390,6 +390,7 @@ INCLUDEPATH += \
     src/ADSB \
     src/api \
     src/AnalyzeView \
+    src/ControlDebugView \
     src/Camera \
     src/AutoPilotPlugins \
     src/FlightDisplay \
@@ -560,6 +561,7 @@ HEADERS += \
     src/ADSB/ADSBVehicle.h \
     src/ADSB/ADSBVehicleManager.h \
     src/AnalyzeView/LogDownloadController.h \
+    src/ControlDebugView/ControlDebugController.h \
     src/AnalyzeView/PX4LogParser.h \
     src/AnalyzeView/ULogParser.h \
     src/AnalyzeView/MavlinkConsoleController.h \
@@ -767,6 +769,7 @@ SOURCES += \
     src/ADSB/ADSBVehicle.cc \
     src/ADSB/ADSBVehicleManager.cc \
     src/AnalyzeView/LogDownloadController.cc \
+    src/ControlDebugView/ControlDebugController.cc \
     src/AnalyzeView/PX4LogParser.cc \
     src/AnalyzeView/ULogParser.cc \
     src/AnalyzeView/MavlinkConsoleController.cc \
