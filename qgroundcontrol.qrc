@@ -38,6 +38,7 @@
         <file alias="AppSettings.qml">src/ui/AppSettings.qml</file>
         <file alias="ControlDebugView.qml">src/ControlDebugView/ControlDebugView.qml</file>
         <file alias="RealtimeChart.qml">src/ControlDebugView/RealtimeChart.qml</file>
+        <file alias="ControlParamRow.qml">src/ControlDebugView/ControlParamRow.qml</file>
         <file alias="BluetoothSettings.qml">src/ui/preferences/BluetoothSettings.qml</file>
         <file alias="CameraPageWidget.qml">src/FlightMap/Widgets/CameraPageWidget.qml</file>
         <file alias="CorridorScanEditor.qml">src/PlanView/CorridorScanEditor.qml</file>

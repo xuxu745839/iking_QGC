@@ -7,7 +7,10 @@
       "Bash(grep -n \"src/AnalyzeView \\\\\\\\|src/AnalyzeView$\\\\|GeoTagController\\\\|LogDownloadController.h\\\\|LogDownloadController.cc\" e:/qgc_dev/V4011dev/qgroundcontrol/qgroundcontrol.pro)",
       "Bash(find /e/qgc_dev/V4011dev/qgroundcontrol/src -name \"*.qml\" -exec grep -l \"vehicle.roll\\\\|vehicle.pitch\\\\|vehicle.heading\" {} ;)",
       "Bash(ls -lh /e/qgc_dev/V4011dev/qgroundcontrol/src/FlightMap/Widgets/*.qml)",
-      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File \"E:\\\\qgc_dev\\\\V4011dev\\\\qgroundcontrol\\\\convert_ico.ps1\")"
+      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File \"E:\\\\qgc_dev\\\\V4011dev\\\\qgroundcontrol\\\\convert_ico.ps1\")",
+      "Bash(while read f)",
+      "Bash(do grep -l \"allParameterIds\\\\|parameterNames\\\\|parameter.*list\\\\|parameter.*model\" \"$f\")",
+      "Bash(done)"
     ]
   }
 }
