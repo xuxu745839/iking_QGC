@@ -53,7 +53,7 @@ LinuxBuild {
 }
 
 WindowsBuild {
-    RC_ICONS = resources/icons/qgroundcontrol.ico
+    RC_ICONS = resources/icons/qgroundcontrol_iking2.ico
     CONFIG += resources_big
 }
 

@@ -28,6 +28,7 @@ ApplicationWindow {
     minimumWidth:   ScreenTools.isMobile ? Screen.width  : Math.min(ScreenTools.defaultFontPixelWidth * 100, Screen.width)
     minimumHeight:  ScreenTools.isMobile ? Screen.height : Math.min(ScreenTools.defaultFontPixelWidth * 50, Screen.height)
     visible:        true
+    title:          "QGroundControl edited by Ikingtec"
 
     Component.onCompleted: {
         //-- Full screen on mobile or tiny screens
