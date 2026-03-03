@@ -134,14 +134,20 @@ Rectangle {
         }
     }
 
-    // ── 6 张图表 + 右侧仪表面板 ────────────────────────────────────
-    RowLayout {
+    // ── 主内容区（图表 + 仪表 + 调参面板）────────────────────────
+    ColumnLayout {
         anchors.top:        titleBar.bottom
         anchors.left:       parent.left
         anchors.right:      parent.right
         anchors.bottom:     parent.bottom
         anchors.margins:    4
         spacing:            4
+
+        // ── 6 张图表 + 右侧仪表面板 ──────────────────────────────
+        RowLayout {
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+            spacing:           4
 
         // ── 左侧：6 张图表（3列×2行） ─────────────────────────────
         GridLayout {
@@ -305,5 +311,236 @@ Rectangle {
                 }
             }
         } // Column（右侧面板）
-    } // RowLayout
+        } // RowLayout（图表+仪表）
+
+        // ── 控制参数调整面板 ──────────────────────────────────────
+        Rectangle {
+            Layout.fillWidth:       true
+            Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 19
+            color:                  "#1a1a3e"
+            radius:                 4
+
+            // 内部使用 ColumnLayout
+            ColumnLayout {
+                anchors.fill:    parent
+                anchors.margins: 8
+                spacing:         4
+
+                // 面板标题行
+                RowLayout {
+                    Layout.fillWidth: true
+                    QGCLabel {
+                        text:           qsTr("控制参数调整")
+                        font.pointSize: ScreenTools.defaultFontPointSize
+                        font.family:    ScreenTools.demiboldFontFamily
+                        color:          "#e0e8ff"
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+                Rectangle { Layout.fillWidth: true; height: 1; color: "#334466" }
+
+                // 三组参数横向排列
+                RowLayout {
+                    Layout.fillWidth:  true
+                    Layout.fillHeight: true
+                    spacing:           10
+
+                    // ── Roll 滚转 ─────────────────────────────────
+                    ColumnLayout {
+                        Layout.fillWidth:  true
+                        Layout.fillHeight: true
+                        spacing:           2
+
+                        QGCLabel { text: qsTr("Roll  滚转"); color: "#88ccff"; font.pixelSize: 12; font.bold: true }
+                        QGCLabel { text: qsTr("— 角度外环 —"); color: "#556688"; font.pixelSize: 10 }
+
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"P"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:rollOuterP; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:rollOuterP.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"F"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:rollOuterF; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:rollOuterF.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+
+                        QGCLabel { text: qsTr("— 角速度内环 —"); color: "#556688"; font.pixelSize: 10 }
+
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"P"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:rollInnerP; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:rollInnerP.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"I"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:rollInnerI; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:rollInnerI.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"D"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:rollInnerD; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:rollInnerD.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"F"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:rollInnerF; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:rollInnerF.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        Item { Layout.fillHeight: true }
+                    } // Roll
+
+                    Rectangle { width:1; Layout.fillHeight:true; color:"#334466" }
+
+                    // ── Pitch 俯仰 ───────────────────────────────
+                    ColumnLayout {
+                        Layout.fillWidth:  true
+                        Layout.fillHeight: true
+                        spacing:           2
+
+                        QGCLabel { text: qsTr("Pitch  俯仰"); color: "#88ccff"; font.pixelSize: 12; font.bold: true }
+                        QGCLabel { text: qsTr("— 角度外环 —"); color: "#556688"; font.pixelSize: 10 }
+
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"P"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:pitchOuterP; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:pitchOuterP.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"F"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:pitchOuterF; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:pitchOuterF.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+
+                        QGCLabel { text: qsTr("— 角速度内环 —"); color: "#556688"; font.pixelSize: 10 }
+
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"P"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:pitchInnerP; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:pitchInnerP.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"I"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:pitchInnerI; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:pitchInnerI.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"D"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:pitchInnerD; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:pitchInnerD.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"F"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:pitchInnerF; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:pitchInnerF.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        Item { Layout.fillHeight: true }
+                    } // Pitch
+
+                    Rectangle { width:1; Layout.fillHeight:true; color:"#334466" }
+
+                    // ── Yaw 航向 ──────────────────────────────────
+                    ColumnLayout {
+                        Layout.fillWidth:  true
+                        Layout.fillHeight: true
+                        spacing:           2
+
+                        QGCLabel { text: qsTr("Yaw  航向"); color: "#88ccff"; font.pixelSize: 12; font.bold: true }
+                        QGCLabel { text: qsTr("— 角度外环 —"); color: "#556688"; font.pixelSize: 10 }
+
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"P"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:yawOuterP; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:yawOuterP.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"F"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:yawOuterF; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:yawOuterF.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+
+                        QGCLabel { text: qsTr("— 角速度内环 —"); color: "#556688"; font.pixelSize: 10 }
+
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"P"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:yawInnerP; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:yawInnerP.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"I"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:yawInnerI; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:yawInnerI.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"D"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:yawInnerD; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:yawInnerD.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        RowLayout { Layout.fillWidth:true; spacing:4
+                            QGCLabel { text:"F"; color:"#aabbcc"; font.pixelSize:11; Layout.preferredWidth:ScreenTools.defaultFontPixelWidth*1.5 }
+                            TextField { id:yawInnerF; Layout.fillWidth:true; Layout.preferredHeight:ScreenTools.defaultFontPixelHeight*1.5
+                                text:"0.0000"; font.pixelSize:11; color:"#e0e8ff"; horizontalAlignment:Text.AlignRight
+                                validator:DoubleValidator{decimals:4;notation:DoubleValidator.StandardNotation}
+                                background:Rectangle{color:"#0d1020";border.color:yawInnerF.activeFocus?"#4488cc":"#334466";border.width:1;radius:2}
+                                padding:2; leftPadding:4; rightPadding:4 }
+                        }
+                        Item { Layout.fillHeight: true }
+                    } // Yaw
+
+                } // RowLayout（三组参数）
+            } // ColumnLayout（面板内部）
+        } // Rectangle（控制参数调整面板）
+
+    } // ColumnLayout（主内容区）
 } // Rectangle
