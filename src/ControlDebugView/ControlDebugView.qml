@@ -32,6 +32,11 @@ Rectangle {
     // ── 全局时间窗口（秒），由顶部滑条控制，绑定到所有图表 ──────────
     property real _timeWindowSec: 30
 
+    // ── 参数面板高度（可拖拽调整）──────────────────────────────
+    property real _paramPanelHeight: ScreenTools.defaultFontPixelHeight * 22
+    property real _paramPanelMinH:   ScreenTools.defaultFontPixelHeight * 16
+    property real _paramPanelMaxH:   ScreenTools.defaultFontPixelHeight * 34
+
     // ── 控制器实例 ─────────────────────────────────────────────────
     ControlDebugController { id: debugCtrl }
 
@@ -148,9 +153,11 @@ Rectangle {
 
         // ── 6 张图表 + 右侧仪表面板 ──────────────────────────────
         RowLayout {
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            spacing:           4
+            Layout.fillWidth:     true
+            Layout.fillHeight:    true
+            Layout.minimumHeight: ScreenTools.defaultFontPixelHeight * 22
+            Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 35
+            spacing:              4
 
         // ── 左侧：6 张图表（3列×2行） ─────────────────────────────
         GridLayout {
@@ -238,6 +245,7 @@ Rectangle {
         // ── 右侧：姿态仪表面板 ────────────────────────────────────
         Column {
             Layout.preferredWidth: ScreenTools.defaultFontPixelWidth * 22
+            Layout.minimumWidth:   ScreenTools.defaultFontPixelWidth * 22
             Layout.fillHeight:     true
             spacing:               6
 
@@ -318,93 +326,181 @@ Rectangle {
 
         // ── 控制参数调整面板 ──────────────────────────────────────
         Rectangle {
-            Layout.fillWidth:       true
-            Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 19
-            color:                  "#1a1a3e"
-            radius:                 4
+            Layout.fillWidth: true
+            Layout.fillHeight: false
+
+            Layout.minimumHeight: controlDebugView._paramPanelMinH
+            Layout.preferredHeight: controlDebugView._paramPanelHeight
+            Layout.maximumHeight: controlDebugView._paramPanelMaxH
+
+            color:  "#1a1a3e"
+            radius: 4
+            clip:   true
 
             ColumnLayout {
-                anchors.fill:    parent
+                anchors.fill: parent
                 anchors.margins: 8
-                spacing:         4
+                spacing: 4
 
-                // 面板标题行
+                // ── 可拖拽的上边界分割条 ─────────────────────────────
+                Rectangle {
+                    id: resizeHandle
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 10
+                    Layout.preferredHeight: 10
+                    color: mouseArea.pressed ? "#223a55" : "transparent"
+
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: parent.width
+                        height: 1
+                        color: "#334466"
+                        opacity: 0.9
+                    }
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 54
+                        height: 4
+                        radius: 2
+                        color: "#446688"
+                        opacity: 0.9
+                    }
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        cursorShape: Qt.SizeVerCursor
+                        hoverEnabled: true
+
+                        // ✅ 防止被 ScrollView/Flickable 抢走手势
+                        preventStealing: true
+                        propagateComposedEvents: false
+
+                        property real _startY: 0
+                        property real _startH: 0
+
+                        onPressed: function(mouse) {
+                            _startY = mouse.y
+                            _startH = controlDebugView._paramPanelHeight
+
+                            // ✅ 强制抓取鼠标，拖出 10px 区域也能继续收到 move
+                            forceActiveFocus()
+                            grabMouse()
+                            mouse.accepted = true
+                        }
+
+                        onReleased: function(mouse) {
+                            ungrabMouse()
+                            mouse.accepted = true
+                        }
+
+                        onPositionChanged: function(mouse) {
+                            if (!pressed) return
+
+                            var dy = mouse.y - _startY
+                            var newH = _startH - dy
+
+                            newH = Math.max(controlDebugView._paramPanelMinH,
+                                            Math.min(controlDebugView._paramPanelMaxH, newH))
+
+                            controlDebugView._paramPanelHeight = newH
+                            mouse.accepted = true
+                        }
+                    }
+                }
+
+                // 标题行
                 RowLayout {
                     Layout.fillWidth: true
                     QGCLabel {
-                        text:           qsTr("控制参数调整")
+                        text: qsTr("控制参数调整")
                         font.pointSize: ScreenTools.defaultFontPointSize
-                        font.family:    ScreenTools.demiboldFontFamily
-                        color:          "#e0e8ff"
+                        font.family: ScreenTools.demiboldFontFamily
+                        color: "#e0e8ff"
                     }
                     Item { Layout.fillWidth: true }
                 }
                 Rectangle { Layout.fillWidth: true; height: 1; color: "#334466" }
 
-                // 三组参数横向排列（Roll / Pitch / Yaw）
-                RowLayout {
-                    Layout.fillWidth:  true
+                // 内容区：可滚动
+                ScrollView {
+                    id: paramScroll
+                    Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing:           10
+                    clip: true
 
-                    // ── Roll 滚转 ─────────────────────────────────
-                    ColumnLayout {
-                        Layout.fillWidth:  true
-                        Layout.fillHeight: true
-                        spacing:           2
-                        QGCLabel { text: qsTr("Roll  滚转"); color: "#88ccff"; font.pixelSize: 12; font.bold: true }
-                        QGCLabel { text: qsTr("— 角度外环 —"); color: "#556688"; font.pixelSize: 10 }
-                        ControlParamRow { roleLabel: "P"; defaultParamName: "PARAM_ROLL_P";      factController: controller }
-                        ControlParamRow { roleLabel: "F"; defaultParamName: "PARAM_ROLL_F";      factController: controller }
-                        QGCLabel { text: qsTr("— 角速度内环 —"); color: "#556688"; font.pixelSize: 10 }
-                        ControlParamRow { roleLabel: "P"; defaultParamName: "PARAM_DROLL_P";  factController: controller }
-                        ControlParamRow { roleLabel: "I"; defaultParamName: "PARAM_DROLL_I";  factController: controller }
-                        ControlParamRow { roleLabel: "D"; defaultParamName: "PARAM_DROLL_D";  factController: controller }
-                        ControlParamRow { roleLabel: "F"; defaultParamName: "PARAM_DROLL_F"; factController: controller }
-                        Item { Layout.fillHeight: true }
-                    } // Roll
+                    contentItem: Flickable {
+                        clip: true
+                        boundsBehavior: Flickable.StopAtBounds
 
-                    Rectangle { width: 1; Layout.fillHeight: true; color: "#334466" }
+                        contentWidth:  contentColumn.implicitWidth
+                        contentHeight: contentColumn.implicitHeight
 
-                    // ── Pitch 俯仰 ───────────────────────────────
-                    ColumnLayout {
-                        Layout.fillWidth:  true
-                        Layout.fillHeight: true
-                        spacing:           2
-                        QGCLabel { text: qsTr("Pitch  俯仰"); color: "#88ccff"; font.pixelSize: 12; font.bold: true }
-                        QGCLabel { text: qsTr("— 角度外环 —"); color: "#556688"; font.pixelSize: 10 }
-                        ControlParamRow { roleLabel: "P"; defaultParamName: "PARAM_PITCH_P";      factController: controller }
-                        ControlParamRow { roleLabel: "F"; defaultParamName: "PARAM_PITCH_F";      factController: controller }
-                        QGCLabel { text: qsTr("— 角速度内环 —"); color: "#556688"; font.pixelSize: 10 }
-                        ControlParamRow { roleLabel: "P"; defaultParamName: "PARAM_DPITCH_P";  factController: controller }
-                        ControlParamRow { roleLabel: "I"; defaultParamName: "PARAM_DPITCH_I";  factController: controller }
-                        ControlParamRow { roleLabel: "D"; defaultParamName: "PARAM_DPITCH_D";  factController: controller }
-                        ControlParamRow { roleLabel: "F"; defaultParamName: "PARAM_DPITCH_F"; factController: controller }
-                        Item { Layout.fillHeight: true }
-                    } // Pitch
+                        ColumnLayout {
+                            id: contentColumn
+                            width: paramScroll.width
+                            spacing: 0
 
-                    Rectangle { width: 1; Layout.fillHeight: true; color: "#334466" }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
 
-                    // ── Yaw 航向 ──────────────────────────────────
-                    ColumnLayout {
-                        Layout.fillWidth:  true
-                        Layout.fillHeight: true
-                        spacing:           2
-                        QGCLabel { text: qsTr("Yaw  航向"); color: "#88ccff"; font.pixelSize: 12; font.bold: true }
-                        QGCLabel { text: qsTr("— 角度外环 —"); color: "#556688"; font.pixelSize: 10 }
-                        ControlParamRow { roleLabel: "P"; defaultParamName: "MC_YAW_P";       factController: controller }
-                        ControlParamRow { roleLabel: "F"; defaultParamName: "";               factController: controller }
-                        QGCLabel { text: qsTr("— 角速度内环 —"); color: "#556688"; font.pixelSize: 10 }
-                        ControlParamRow { roleLabel: "P"; defaultParamName: "MC_YAWRATE_P";   factController: controller }
-                        ControlParamRow { roleLabel: "I"; defaultParamName: "MC_YAWRATE_I";   factController: controller }
-                        ControlParamRow { roleLabel: "D"; defaultParamName: "MC_YAWRATE_D";   factController: controller }
-                        ControlParamRow { roleLabel: "F"; defaultParamName: "MC_YAWRATE_FF";  factController: controller }
-                        Item { Layout.fillHeight: true }
-                    } // Yaw
+                                // ── Roll ─────────────────────────
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 6
+                                    QGCLabel { text: qsTr("Roll  滚转"); color:"#88ccff"; font.pixelSize:12; font.bold:true }
+                                    QGCLabel { text: qsTr("— 角度外环 —"); color:"#556688"; font.pixelSize:10 }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_ROLL_P"; factController: controller }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_ROLL_F"; factController: controller }
+                                    QGCLabel { text: qsTr("— 角速度内环 —"); color:"#556688"; font.pixelSize:10 }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_DROLL_P"; factController: controller }
+                                    ControlParamRow { roleLabel:"I"; defaultParamName:"PARAM_DROLL_I"; factController: controller }
+                                    ControlParamRow { roleLabel:"D"; defaultParamName:"PARAM_DROLL_D"; factController: controller }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_DROLL_F"; factController: controller }
+                                    Item { Layout.preferredHeight: 6 }
+                                }
 
-                } // RowLayout（三组参数）
-            } // ColumnLayout（面板内部）
+                                Rectangle { width: 1; Layout.fillHeight: true; color: "#334466" }
+
+                                // ── Pitch ────────────────────────
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 6
+                                    QGCLabel { text: qsTr("Pitch  俯仰"); color:"#88ccff"; font.pixelSize:12; font.bold:true }
+                                    QGCLabel { text: qsTr("— 角度外环 —"); color:"#556688"; font.pixelSize:10 }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_PITCH_P"; factController: controller }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_PITCH_F"; factController: controller }
+                                    QGCLabel { text: qsTr("— 角速度内环 —"); color:"#556688"; font.pixelSize:10 }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_DPITCH_P"; factController: controller }
+                                    ControlParamRow { roleLabel:"I"; defaultParamName:"PARAM_DPITCH_I"; factController: controller }
+                                    ControlParamRow { roleLabel:"D"; defaultParamName:"PARAM_DPITCH_D"; factController: controller }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_DPITCH_F"; factController: controller }
+                                    Item { Layout.preferredHeight: 6 }
+                                }
+
+                                Rectangle { width: 1; Layout.fillHeight: true; color: "#334466" }
+
+                                // ── Yaw ──────────────────────────
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 6
+                                    QGCLabel { text: qsTr("Yaw  航向"); color:"#88ccff"; font.pixelSize:12; font.bold:true }
+                                    QGCLabel { text: qsTr("— 角度外环 —"); color:"#556688"; font.pixelSize:10 }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"MC_YAW_P"; factController: controller }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:""; factController: controller }
+                                    QGCLabel { text: qsTr("— 角速度内环 —"); color:"#556688"; font.pixelSize:10 }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"MC_YAWRATE_P"; factController: controller }
+                                    ControlParamRow { roleLabel:"I"; defaultParamName:"MC_YAWRATE_I"; factController: controller }
+                                    ControlParamRow { roleLabel:"D"; defaultParamName:"MC_YAWRATE_D"; factController: controller }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"MC_YAWRATE_FF"; factController: controller }
+                                    Item { Layout.preferredHeight: 6 }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         } // Rectangle（控制参数调整面板）
-
     } // ColumnLayout（主内容区）
 } // Rectangle

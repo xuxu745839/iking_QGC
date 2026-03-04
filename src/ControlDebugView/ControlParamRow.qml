@@ -1,14 +1,3 @@
-/****************************************************************************
- *
- * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
- *
- * QGroundControl is licensed according to the terms in the file
- * COPYING.md in the root of the source code directory.
- *
- ****************************************************************************/
-
-// 控制参数调整行组件：角色标签 + 参数名下拉选择 + 实时值读写框
-
 import QtQuick          2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts  1.11
@@ -19,7 +8,7 @@ import QGroundControl.ScreenTools   1.0
 
 RowLayout {
     id:      root
-    spacing: 4
+    spacing: 6
     Layout.fillWidth: true
 
     // 角色标签（P / I / D / F）
@@ -29,24 +18,40 @@ RowLayout {
     // 由父级传入的 FactPanelController 实例
     property var    factController:   null
 
-    // ── PID 角色标签 ─────────────────────────────────────────────────
+    // ---- 关键：统一行高（你可以调 2.0~2.6 之间）
+    readonly property int _rowH:  Math.round(ScreenTools.defaultFontPixelHeight * 2.25)
+    readonly property int _fontPx: 11
+
+    // 让布局系统知道这一行需要多高
+    implicitHeight: _rowH
+    Layout.minimumHeight: _rowH
+    Layout.preferredHeight: _rowH
+
+    // ── PID 角色标签 ───────────────────────────────────────────
     QGCLabel {
-        text:              root.roleLabel
-        color:             "#aabbcc"
-        font.pixelSize:    11
-        Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * 1.5
-        Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.5
+        text:           root.roleLabel
+        color:          "#aabbcc"
+        font.pixelSize: root._fontPx
+
+        Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * 1.7
+        Layout.minimumHeight:   root._rowH
+        Layout.preferredHeight: root._rowH
+
         verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
     }
 
-    // ── 参数名选择框（可编辑 ComboBox，支持直接输入任意参数名）──────
+    // ── 参数名选择框（可编辑 ComboBox）──────────────────────────
     ComboBox {
         id:       _combo
         editable: true
         model:    root.defaultParamName.length > 0 ? [root.defaultParamName] : [""]
+
         Layout.fillWidth:       true
-        Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.5
-        font.pixelSize: 11
+        Layout.minimumHeight:   root._rowH
+        Layout.preferredHeight: root._rowH
+
+        font.pixelSize: root._fontPx
 
         Component.onCompleted: editText = root.defaultParamName
 
@@ -59,24 +64,45 @@ RowLayout {
         palette.highlight:       "#2a3a5e"
         palette.highlightedText: "#e0e8ff"
 
+        // 关键：把输入区的上下 padding 调大一点，避免文字贴边
+        contentItem: TextInput {
+            text: _combo.editText
+            color: "#ccddee"
+            font.pixelSize: root._fontPx
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: 6
+            rightPadding: 18   // 给右侧箭头留空间
+            clip: true
+
+            // 让编辑行为仍然归 ComboBox 管（保持原功能）
+            readOnly: !_combo.editable
+            selectByMouse: true
+            validator: _combo.validator
+            inputMethodHints: _combo.inputMethodHints
+
+            onTextEdited: _combo.editText = text
+        }
+
         background: Rectangle {
+            implicitHeight: root._rowH
             color:        "#0d1020"
             border.color: _combo.activeFocus ? "#4488cc" : "#334466"
             border.width: 1
-            radius:       2
+            radius:       3
         }
 
         delegate: ItemDelegate {
-            width:       _combo.width
-            height:      ScreenTools.defaultFontPixelHeight * 1.8
+            width:  _combo.width
+            height: Math.round(ScreenTools.defaultFontPixelHeight * 2.0)
             highlighted: _combo.highlightedIndex === index
+
             contentItem: Text {
                 text:              modelData
                 color:             parent.highlighted ? "#e0e8ff" : "#ccddee"
-                font.pixelSize:    11
+                font.pixelSize:    root._fontPx
                 elide:             Text.ElideRight
                 verticalAlignment: Text.AlignVCenter
-                leftPadding:       4
+                leftPadding:       6
             }
             background: Rectangle {
                 color: parent.highlighted ? "#2a3a5e" : "#0d1020"
@@ -87,27 +113,29 @@ RowLayout {
             y:              _combo.height
             width:          _combo.width
             padding:        1
-            implicitHeight: _listView.contentHeight + 2
+            implicitHeight: Math.min(_listView.contentHeight + 2,
+                                     ScreenTools.defaultFontPixelHeight * 18)
+
             contentItem: ListView {
                 id:             _listView
                 clip:           true
                 model:          _combo.delegateModel
                 implicitHeight: contentHeight
             }
+
             background: Rectangle {
                 color:        "#0d1020"
                 border.color: "#334466"
                 border.width: 1
-                radius:       2
+                radius:       3
             }
         }
     }
 
-    // ── 参数当前值（自动从飞控读取，可编辑后回写飞控）────────────────
+    // ── 参数当前值（自动读取，可编辑回写）──────────────────────────
     TextField {
         id: _valueTF
 
-        // 动态绑定 Fact 对象（随参数名变化而更新）
         property var _fact: {
             var n    = _combo.editText.trim()
             var ctrl = root.factController
@@ -122,14 +150,17 @@ RowLayout {
         readOnly: !_fact
 
         Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * 9
-        Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.5
-        font.pixelSize:         11
-        horizontalAlignment:    Text.AlignRight
-        padding:      2
-        leftPadding:  4
-        rightPadding: 4
+        Layout.minimumHeight:   root._rowH
+        Layout.preferredHeight: root._rowH
 
-        // 编辑完成后将新值写回飞控，并重新绑定显示
+        font.pixelSize:      root._fontPx
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment:   Text.AlignVCenter
+
+        padding:      4
+        leftPadding:  6
+        rightPadding: 6
+
         onEditingFinished: {
             if (_fact) {
                 _fact.value = text
@@ -140,11 +171,12 @@ RowLayout {
         }
 
         background: Rectangle {
+            implicitHeight: root._rowH
             color:        "#0d1020"
             border.color: _valueTF.activeFocus ? "#4488cc"
                         : (_valueTF._fact      ? "#334466" : "#223344")
             border.width: 1
-            radius:       2
+            radius:       3
         }
     }
 }
