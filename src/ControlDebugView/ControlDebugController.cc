@@ -11,8 +11,37 @@
 #include "MAVLinkProtocol.h"
 #include "MultiVehicleManager.h"
 #include "QGCApplication.h"
+#include "ParameterManager.h"
+#include "Fact.h"
 
 #include <QtMath>
+#include <QQmlEngine>
+
+Fact* ControlDebugController::getParameterFact(int componentId, const QString& name) const
+{
+    if (!_activeVehicle || name.isEmpty()) {
+        return nullptr;
+    }
+
+    ParameterManager* const paramMgr = _activeVehicle->parameterManager();
+    if (!paramMgr || !paramMgr->parameterExists(componentId, name)) {
+        return nullptr;
+    }
+
+    Fact* const fact = paramMgr->getParameter(componentId, name);
+    QQmlEngine::setObjectOwnership(fact, QQmlEngine::CppOwnership);
+    return fact;
+}
+
+bool ControlDebugController::parameterExists(int componentId, const QString& name) const
+{
+    if (!_activeVehicle || name.isEmpty()) {
+        return false;
+    }
+
+    ParameterManager* const paramMgr = _activeVehicle->parameterManager();
+    return paramMgr && paramMgr->parameterExists(componentId, name);
+}
 
 ControlDebugController::ControlDebugController(QObject* parent)
     : QObject(parent)

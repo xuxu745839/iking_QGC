@@ -141,6 +141,9 @@ RowLayout {
             var ctrl = root.factController
             var av   = QGroundControl.multiVehicleManager.activeVehicle
             if (!av || !ctrl || !n) return null
+            // 显式访问 parametersReady，让 QML 将其注册为绑定依赖项。
+            // 当飞控参数下载完成时，binding 会自动重新求值。
+            if (!av.parameterManager.parametersReady) return null
             return ctrl.parameterExists(-1, n)
                    ? ctrl.getParameterFact(-1, n) : null
         }

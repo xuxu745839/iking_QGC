@@ -14,6 +14,7 @@
 #include "Vehicle.h"
 
 class LinkInterface;
+class Fact;
 
 /// 控制调试控制器
 /// 订阅 ATTITUDE 和 ATTITUDE_TARGET MAVLink 消息，向 QML 提供角度/角速度的
@@ -40,6 +41,9 @@ class ControlDebugController : public QObject
 
 public:
     explicit ControlDebugController(QObject* parent = nullptr);
+
+    Q_INVOKABLE Fact* getParameterFact(int componentId, const QString& name) const;
+    Q_INVOKABLE bool  parameterExists(int componentId, const QString& name) const;
 
     double feedRoll()      const { return _feedRoll; }
     double feedPitch()     const { return _feedPitch; }

@@ -27,7 +27,6 @@ Rectangle {
     z:      QGroundControl.zOrderTopMost
 
     QGCPalette { id: qgcPal; colorGroupEnabled: true }
-    FactPanelController { id: controller }
 
     // ── 全局时间窗口（秒），由顶部滑条控制，绑定到所有图表 ──────────
     property real _timeWindowSec: 30
@@ -451,13 +450,13 @@ Rectangle {
                                     spacing: 6
                                     QGCLabel { text: qsTr("Roll  滚转"); color:"#88ccff"; font.pixelSize:12; font.bold:true }
                                     QGCLabel { text: qsTr("— 角度外环 —"); color:"#556688"; font.pixelSize:10 }
-                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_ROLL_P"; factController: controller }
-                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_ROLL_F"; factController: controller }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_ROLL_P"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_ROLL_F"; factController: debugCtrl }
                                     QGCLabel { text: qsTr("— 角速度内环 —"); color:"#556688"; font.pixelSize:10 }
-                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_DROLL_P"; factController: controller }
-                                    ControlParamRow { roleLabel:"I"; defaultParamName:"PARAM_DROLL_I"; factController: controller }
-                                    ControlParamRow { roleLabel:"D"; defaultParamName:"PARAM_DROLL_D"; factController: controller }
-                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_DROLL_F"; factController: controller }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_DROLL_P"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"I"; defaultParamName:"PARAM_DROLL_I"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"D"; defaultParamName:"PARAM_DROLL_D"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_DROLL_F"; factController: debugCtrl }
                                     Item { Layout.preferredHeight: 6 }
                                 }
 
@@ -469,13 +468,13 @@ Rectangle {
                                     spacing: 6
                                     QGCLabel { text: qsTr("Pitch  俯仰"); color:"#88ccff"; font.pixelSize:12; font.bold:true }
                                     QGCLabel { text: qsTr("— 角度外环 —"); color:"#556688"; font.pixelSize:10 }
-                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_PITCH_P"; factController: controller }
-                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_PITCH_F"; factController: controller }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_PITCH_P"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_PITCH_F"; factController: debugCtrl }
                                     QGCLabel { text: qsTr("— 角速度内环 —"); color:"#556688"; font.pixelSize:10 }
-                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_DPITCH_P"; factController: controller }
-                                    ControlParamRow { roleLabel:"I"; defaultParamName:"PARAM_DPITCH_I"; factController: controller }
-                                    ControlParamRow { roleLabel:"D"; defaultParamName:"PARAM_DPITCH_D"; factController: controller }
-                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_DPITCH_F"; factController: controller }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"PARAM_DPITCH_P"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"I"; defaultParamName:"PARAM_DPITCH_I"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"D"; defaultParamName:"PARAM_DPITCH_D"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"PARAM_DPITCH_F"; factController: debugCtrl }
                                     Item { Layout.preferredHeight: 6 }
                                 }
 
@@ -487,13 +486,13 @@ Rectangle {
                                     spacing: 6
                                     QGCLabel { text: qsTr("Yaw  航向"); color:"#88ccff"; font.pixelSize:12; font.bold:true }
                                     QGCLabel { text: qsTr("— 角度外环 —"); color:"#556688"; font.pixelSize:10 }
-                                    ControlParamRow { roleLabel:"P"; defaultParamName:"MC_YAW_P"; factController: controller }
-                                    ControlParamRow { roleLabel:"F"; defaultParamName:""; factController: controller }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"MC_YAW_P"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:""; factController: debugCtrl }
                                     QGCLabel { text: qsTr("— 角速度内环 —"); color:"#556688"; font.pixelSize:10 }
-                                    ControlParamRow { roleLabel:"P"; defaultParamName:"MC_YAWRATE_P"; factController: controller }
-                                    ControlParamRow { roleLabel:"I"; defaultParamName:"MC_YAWRATE_I"; factController: controller }
-                                    ControlParamRow { roleLabel:"D"; defaultParamName:"MC_YAWRATE_D"; factController: controller }
-                                    ControlParamRow { roleLabel:"F"; defaultParamName:"MC_YAWRATE_FF"; factController: controller }
+                                    ControlParamRow { roleLabel:"P"; defaultParamName:"MC_YAWRATE_P"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"I"; defaultParamName:"MC_YAWRATE_I"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"D"; defaultParamName:"MC_YAWRATE_D"; factController: debugCtrl }
+                                    ControlParamRow { roleLabel:"F"; defaultParamName:"MC_YAWRATE_FF"; factController: debugCtrl }
                                     Item { Layout.preferredHeight: 6 }
                                 }
                             }
